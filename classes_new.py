@@ -63,8 +63,8 @@ class GreenHouse:
 
         print(f"Current Temperature: {self.temperature}")
 
-        # If it is to cold.
-        if self.temperature < self.pref_temperature:
+        # If it is too cold or preffered.
+        if self.temperature <= self.pref_temperature:
             print("Temperature Lower Than Preferred Temperature")
 
             # Are the ventilation system active?
@@ -84,14 +84,6 @@ class GreenHouse:
                 # Then start it.
                 print("Starting Ventilation")
                 self.venting = True
-
-        # If the temperatur is optimale.
-        if self.temperature == self.pref_temperature:
-            
-            # Then stop cooling.
-            if self.venting:
-                 print("Stopping Ventilation")
-                 self.venting = False
 
     def __main(self) -> None:
         """The main init method for this class.
