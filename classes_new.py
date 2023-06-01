@@ -61,29 +61,40 @@ class GreenHouse:
             You should not normally not call this method.
         """
 
+        # In theory, read temperature from hardware/reader
         print(f"Current Temperature: {self.temperature}")
 
         # If it is too cold or preffered.
         if self.temperature <= self.pref_temperature:
             print("Temperature Lower Than Preferred Temperature")
 
-            # Are the ventilation system active?
-            if self.venting:
-
-                # Then stop it.
-                print("Stopping Ventilation")
-                self.venting = False
+            # Then stop it.
+            print("Should Stop Ventilation")
+            return False
 
         # If it is to warm.
         if self.temperature > self.pref_temperature:
             print("Temperature is Higher Than Preferred Temperature")
 
-            # If the centilation system is not active.
-            if not self.venting:
+            # Then start it.
+            print("Should Start Ventilation")
+            return True
+            
+    def _ventilation_control(self, enable):
+        ''' Control the ventilation hardware
 
-                # Then start it.
-                print("Starting Ventilation")
-                self.venting = True
+        Note:
+            You should not normally call this method.
+        '''
+
+        # Check if the Ventilation has to be turned on
+        if enable:
+            self.venting = True
+
+        # Else disable venting
+        else:
+            self.venting = False
+    
 
     def __main(self) -> None:
         """The main init method for this class.
@@ -91,20 +102,20 @@ class GreenHouse:
         Note:
             You should never call this method.
         """
-        #
+        # Initialize Variables
         past_time = None
 
         while self.time != past_time:
-            #-----# Run Monitors For The Hour #-----#
-            self._monitor_temperature()
+            # Run Monitors For The Hour (Temperature)
+            self._ventilation_control(enable=self._monitor_temperature())
 
-            #-----# Check Time For Lighting #-----#
+            # Check Time For Lighting
             if self.time == 0:
                 for section in self.sections:
                     light_thread = threading.Thread(target=section.lighting)
                     light_thread.start()
 
-            #-----# Update Time In Sections #-----#
+            # Update Time In Sections
             for section in self.sections:
                 section.time = self.time
             
