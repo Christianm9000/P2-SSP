@@ -54,7 +54,7 @@ class GreenHouse:
         #main_thread = threading.Thread(name='handler', target=self.__main, args=())
         #main_thread.start()
 
-    def _monitor_temperature(self) -> None:
+    def _monitor_temperature(self) -> bool:
         """Monitor the temperature.
         
         Note:
@@ -69,16 +69,18 @@ class GreenHouse:
             print("Temperature Lower Than Preferred Temperature")
 
             # Then stop it.
-            print("Should Stop Ventilation")
-            return False
+            print("Stop Ventilation")
+            self._ventilation_control(enable=False)
+            return
 
         # If it is to warm.
         if self.temperature > self.pref_temperature:
             print("Temperature is Higher Than Preferred Temperature")
 
             # Then start it.
-            print("Should Start Ventilation")
-            return True
+            print("Start Ventilation")
+            self._ventilation_control(enable=True)
+            return
             
     def _ventilation_control(self, enable):
         ''' Control the ventilation hardware
@@ -107,7 +109,7 @@ class GreenHouse:
 
         while self.time != past_time:
             # Run Monitors For The Hour (Temperature)
-            self._ventilation_control(enable=self._monitor_temperature())
+            self._monitor_temperature()
 
             # Check Time For Lighting
             if self.time == 0:
