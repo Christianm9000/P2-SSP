@@ -34,8 +34,8 @@ def __main() -> None:
         current_hour += 1 # Increment the time.
         time.sleep(1) 
 
-        # Rest the timer.
-        current_hour = (current_hour + 1) % 24
+        # Rest the timer when hitting 24
+        current_hour = current_hour % 24
 
 
 def control_temp(greenhouse: GreenHouse) -> None:

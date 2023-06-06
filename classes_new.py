@@ -1,7 +1,7 @@
 '''The main file that contains the `GreenHouse`, `Section` and `Plant`.'''
 
 
-import threading
+import threading, copy
 
 class GreenHouse:
     """A class of a greenhouse"""
@@ -51,8 +51,8 @@ class GreenHouse:
         self.sections = [self.upper, self.middle, self.lower]
 
         # Start the green house.
-        #main_thread = threading.Thread(name='handler', target=self.__main, args=())
-        #main_thread.start()
+        main_thread = threading.Thread(name='handler', target=self.__main, args=())
+        main_thread.start()
 
     def _monitor_temperature(self) -> bool:
         """Monitor the temperature.
@@ -66,7 +66,7 @@ class GreenHouse:
 
         # If it is too cold or preffered.
         if self.temperature <= self.pref_temperature:
-            print("Temperature Lower Than Preferred Temperature")
+            print("Temperature Lower Than or Equal to Preferred Temperature")
 
             # Then stop it.
             print("Stop Ventilation")
@@ -90,11 +90,11 @@ class GreenHouse:
         '''
 
         # Check if the Ventilation has to be turned on
-        if enable:
+        if enable == True:
             self.venting = True
 
         # Else disable venting
-        else:
+        if enable == False:
             self.venting = False
     
 
@@ -106,22 +106,24 @@ class GreenHouse:
         """
         # Initialize Variables
         past_time = None
+        print("Main Initialized")
 
-        while self.time != past_time:
-            # Run Monitors For The Hour (Temperature)
-            self._monitor_temperature()
+        while True:
+            if self.time != past_time:
+                # Run Monitors For The Hour (Temperature)
+                self._monitor_temperature()
 
-            # Check Time For Lighting
-            if self.time == 0:
+                # Check Time For Lighting
+                if self.time == 0:
+                    for section in self.sections:
+                        light_thread = threading.Thread(target=section.lighting)
+                        light_thread.start()
+
+                # Update Time In Sections
                 for section in self.sections:
-                    light_thread = threading.Thread(target=section.lighting)
-                    light_thread.start()
-
-            # Update Time In Sections
-            for section in self.sections:
-                section.time = self.time
-            
-            past_time = self.time
+                    section.time = self.time
+                
+                past_time = copy.deepcopy(self.time)
 
 
 class Section:
